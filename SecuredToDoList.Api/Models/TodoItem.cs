@@ -1,12 +1,13 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TodoList.Models
+namespace SecuredToDoList.Api.Models
 {
-    public class TodoItem
+    public class TodoItem : TodoItemEditModel
     {
-        public int Id { get; set; }
-        public string Title { get; set; }
-        public bool IsDone { get; set; }
-        public int Priority { get; set; }
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid Id { get; set; }
     }
 }
