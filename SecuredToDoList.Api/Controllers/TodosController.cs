@@ -10,6 +10,7 @@ using SecuredToDoList.Api.Models;
 
 namespace SecuredToDoList.Api.Controllers
 {
+    [RoutePrefix("api/ToDos")]
     public class TodosController : ApiController
     {
         private readonly ApplicationDbContext db;
@@ -20,6 +21,7 @@ namespace SecuredToDoList.Api.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         [Route("")]
         public IEnumerable<TodoItem> Index()
         {
