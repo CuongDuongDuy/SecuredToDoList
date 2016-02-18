@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SecuredToDoList.Api.Models;
@@ -31,9 +32,12 @@ namespace SecuredToDoList.Api.Controllers
 
         [HttpGet]
         [Route("{id:guid}")]
+        [Authorize]
         public async Task<TodoItem> Details(Guid id)
         {
-            var todo = await db.ToDoItems.SingleOrDefaultAsync(x => x.Id == id);
+            var principal = Request.GetRequestContext().Principal as ClaimsPrincipal;
+            var userName = principal.Claims.FirstOrDefault(x => x.Type == "sub").Value;
+            var todo = await db.ToDoItems.SingleOrDefaultAsync(x => x.Id == id && (x.IsPublic || x.Worker == userName));
             return todo;
         }
 

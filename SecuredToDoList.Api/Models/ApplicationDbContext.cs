@@ -10,7 +10,7 @@ namespace SecuredToDoList.Api.Models
         }
         public IDbSet<TodoItem> ToDoItems { get; set; }
 
-        public class ApplicationDbInitializer : DropCreateDatabaseAlways<ApplicationDbContext>
+        public class ApplicationDbInitializer : DropCreateDatabaseIfModelChanges<ApplicationDbContext>
         {
             protected override void Seed(ApplicationDbContext context)
             {
