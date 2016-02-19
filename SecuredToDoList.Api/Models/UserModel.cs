@@ -18,5 +18,9 @@ namespace SecuredToDoList.Api.Models
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        [DataType(DataType.Text)]
+        [Display(Name = "Use Roles")]
+        public string UserRoles { get; set; }
     }
 }

@@ -23,17 +23,17 @@ namespace SecuredToDoList.Api.Providers
 
                 if (user == null)
                 {
-                    context.SetError("invalid_grant", "The user name or password is incorrect.");
+                    context.SetError("Invalid Grant", "The user name or password is incorrect.");
                     return;
                 }
+                var identity = new ClaimsIdentity(context.Options.AuthenticationType);
+                identity.AddClaim(new Claim(ClaimTypes.Name, user.UserName));
+                foreach (var role in user.Roles)
+                {
+                    identity.AddClaim(new Claim(ClaimTypes.Role, role.RoleId));
+                }
+                context.Validated(identity);
             }
-
-            var identity = new ClaimsIdentity(context.Options.AuthenticationType);
-            identity.AddClaim(new Claim(ClaimTypes.Sid, context.UserName));
-            identity.AddClaim(new Claim(ClaimTypes.Role, "user"));
-
-            context.Validated(identity);
-
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
+using SecuredToDoList.Api.Attributes;
 using SecuredToDoList.Api.Models;
 
 namespace SecuredToDoList.Api.Controllers
@@ -82,11 +83,12 @@ namespace SecuredToDoList.Api.Controllers
             todo.Worker = model.Worker;
 
             await db.SaveChangesAsync();
-
             return Ok();
         }
 
         [HttpDelete]
+        [Route("{id:guid}")]
+        [ClaimAuthorized(RoleNames = "admin")]
         public async Task<HttpResponseMessage> Delete(Guid id)
         {
             var todoItem = await db.ToDoItems.SingleOrDefaultAsync(x => x.Id == id);
@@ -105,5 +107,4 @@ namespace SecuredToDoList.Api.Controllers
         }
 
     }
-
 }
