@@ -1,21 +1,21 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Http;
 using Microsoft.AspNet.Identity;
-using SecuredToDoList.Api.Models;
-using SecuredToDoList.Api.Repositories;
+using SecuredToDoList.Api.AuthExtensions.Models;
+using SecuredToDoList.Api.AuthExtensions.Repositories;
 
 namespace SecuredToDoList.Api.Controllers
 {
     [RoutePrefix("api/Accounts")]
     public class AccountsController : ApiController
     {
-        private readonly AuthenticationRepository repo = null;
+        private readonly AuthenticationRepository authenticationRepository;
 
         public AccountsController()
         {
-            repo = new AuthenticationRepository();
+            authenticationRepository = new AuthenticationRepository();
         }
- 
+
         [AllowAnonymous]
         [Route("Register")]
         [HttpPost]
@@ -26,7 +26,7 @@ namespace SecuredToDoList.Api.Controllers
                 return BadRequest(ModelState);
             }
  
-            var result = await repo.RegisterUser(userModel);
+            var result = await authenticationRepository.RegisterUserAsync(userModel);
  
             var errorResult = GetErrorResult(result);
  

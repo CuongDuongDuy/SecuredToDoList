@@ -4,7 +4,10 @@ using Microsoft.Owin;
 using Microsoft.Owin.Security.OAuth;
 using Owin;
 using SecuredToDoList.Api;
-using SecuredToDoList.Api.Providers;
+using SecuredToDoList.Api.AuthExtensions.Managers;
+using SecuredToDoList.Api.AuthExtensions.Models;
+using SecuredToDoList.Api.AuthExtensions.Providers;
+using SecuredToDoList.Api.Models;
 
 [assembly: OwinStartup(typeof(Startup))]
 
@@ -30,6 +33,10 @@ namespace SecuredToDoList.Api
                 AccessTokenExpireTimeSpan = TimeSpan.FromDays(1),
                 Provider = new BearerAuthenticationServerProvider()
             };
+
+            app.CreatePerOwinContext(AuthDbContext.Create);
+            app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
+            app.CreatePerOwinContext<ApplicationRoleManager>(ApplicationRoleManager.Create);
 
             // Token Generation
             app.UseOAuthAuthorizationServer(oAuthServerOptions);
