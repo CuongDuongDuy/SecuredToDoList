@@ -34,7 +34,7 @@ namespace SecuredToDoList.Api
                 Provider = new BearerAuthenticationServerProvider()
             };
 
-            app.CreatePerOwinContext(AuthDbContext.Create);
+            app.CreatePerOwinContext<AuthDbContext>(AuthDbContext.Create);
             app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
             app.CreatePerOwinContext<ApplicationRoleManager>(ApplicationRoleManager.Create);
 

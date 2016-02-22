@@ -9,8 +9,12 @@ namespace SecuredToDoList.Api.AuthExtensions.Models
         public string UserName { get; set; }
 
         [Required]
-        [Display(Name = "Call Name")]
-        public string CallName { get; set; }
+        [Display(Name = "Display Name")]
+        public string DisplayName { get; set; }
+
+        [Required]
+        [Display(Name = "Email")]
+        public string Email { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]

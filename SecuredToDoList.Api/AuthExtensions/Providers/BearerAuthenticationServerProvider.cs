@@ -5,7 +5,7 @@ using SecuredToDoList.Api.AuthExtensions.Repositories;
 
 namespace SecuredToDoList.Api.AuthExtensions.Providers
 {
-    public class BearerAuthenticationServerProvider: OAuthAuthorizationServerProvider
+    public class BearerAuthenticationServerProvider : OAuthAuthorizationServerProvider
     {
         public override async Task ValidateClientAuthentication(OAuthValidateClientAuthenticationContext context)
         {
@@ -17,23 +17,21 @@ namespace SecuredToDoList.Api.AuthExtensions.Providers
 
             context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] {"*"});
 
-            using (var repo = new AuthenticationRepository())
-            {
-                var user = await repo.FindUser(context.UserName, context.Password);
+            var authenticationRepository = new AuthenticationRepository(context.OwinContext);
+            var user = await authenticationRepository.FindUser(context.UserName, context.Password);
 
-                if (user == null)
-                {
-                    context.SetError("Invalid Grant", "The user name or password is incorrect.");
-                    return;
-                }
-                var identity = new ClaimsIdentity(context.Options.AuthenticationType);
-                identity.AddClaim(new Claim(ClaimTypes.Name, user.UserName));
-                foreach (var role in user.Roles)
-                {
-                    identity.AddClaim(new Claim(ClaimTypes.Role, role.RoleId));
-                }
-                context.Validated(identity);
+            if (user == null)
+            {
+                context.SetError("Invalid Grant", "The user name or password is incorrect.");
+                return;
             }
+            var identity = new ClaimsIdentity(context.Options.AuthenticationType);
+            identity.AddClaim(new Claim(ClaimTypes.Name, user.UserName));
+            foreach (var role in user.Roles)
+            {
+                identity.AddClaim(new Claim(ClaimTypes.Role, role.RoleId));
+            }
+            context.Validated(identity);
         }
     }
 }

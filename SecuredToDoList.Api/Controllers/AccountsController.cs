@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 using Microsoft.AspNet.Identity;
 using SecuredToDoList.Api.AuthExtensions.Models;
@@ -9,11 +10,15 @@ namespace SecuredToDoList.Api.Controllers
     [RoutePrefix("api/Accounts")]
     public class AccountsController : ApiController
     {
-        private readonly AuthenticationRepository authenticationRepository;
+        private AuthenticationRepository authenticationRepository;
 
-        public AccountsController()
+        public AuthenticationRepository AuthenticationRepository
         {
-            authenticationRepository = new AuthenticationRepository();
+            get
+            {
+                return authenticationRepository ?? new AuthenticationRepository(Request.GetOwinContext());
+            }
+            private set { authenticationRepository = value; }
         }
 
         [AllowAnonymous]
@@ -26,21 +31,11 @@ namespace SecuredToDoList.Api.Controllers
                 return BadRequest(ModelState);
             }
  
-            var result = await authenticationRepository.RegisterUserAsync(userModel);
+            var result = await AuthenticationRepository.RegisterUserAsync(userModel);
  
             var errorResult = GetErrorResult(result);
  
             return errorResult ?? Ok();
-        }
- 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                repo.Dispose();
-            }
- 
-            base.Dispose(disposing);
         }
  
         private IHttpActionResult GetErrorResult(IdentityResult result)
