@@ -11,6 +11,7 @@ namespace SecuredToDoList.Api.Models
         public bool IsDone { get; set; }
         public bool IsPublic { get; set; }
         [MaxLength(2000)]
-        public string Worker { get; set; }
+        [DataType(DataType.EmailAddress)]
+        public string AttendeeEmail { get; set; }
     }
 }

@@ -13,7 +13,7 @@ using SecuredToDoList.Api.Models;
 namespace SecuredToDoList.Api.Controllers
 {
     [RoutePrefix("api/ToDos")]
-    public class TodosController : ApiController
+    public class TodosController : BaseController
     {
         private readonly ApplicationDbContext db;
 
@@ -23,11 +23,11 @@ namespace SecuredToDoList.Api.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         [Route("")]
         public IEnumerable<TodoItem> Index()
         {
-            var todos = db.ToDoItems.ToList();
+            var userEmail = GetCurrentClaimValue(ClaimTypes.Email);
+            var todos = db.ToDoItems.Where(x => x.IsPublic || x.AttendeeEmail == userEmail).ToList();
             return todos;
         }
 
@@ -36,9 +36,8 @@ namespace SecuredToDoList.Api.Controllers
         [Authorize]
         public async Task<TodoItem> Details(Guid id)
         {
-            var principal = Request.GetRequestContext().Principal as ClaimsPrincipal;
-            var userName = principal.Claims.FirstOrDefault(x => x.Type == "sub").Value;
-            var todo = await db.ToDoItems.SingleOrDefaultAsync(x => x.Id == id && (x.IsPublic || x.Worker == userName));
+            var userEmail = GetCurrentClaimValue(ClaimTypes.Email);
+            var todo = await db.ToDoItems.SingleOrDefaultAsync(x => x.Id == id && (x.IsPublic || x.AttendeeEmail == userEmail));
             return todo;
         }
 
@@ -55,7 +54,7 @@ namespace SecuredToDoList.Api.Controllers
                 Title = model.Title,
                 IsDone = model.IsDone,
                 IsPublic = model.IsPublic,
-                Worker = model.Worker
+                AttendeeEmail = model.AttendeeEmail
             };
 
             db.ToDoItems.Add(todo);
@@ -80,7 +79,7 @@ namespace SecuredToDoList.Api.Controllers
             todo.Title = model.Title;
             todo.IsDone = model.IsDone;
             todo.IsPublic = model.IsPublic;
-            todo.Worker = model.Worker;
+            todo.AttendeeEmail = model.AttendeeEmail;
 
             await db.SaveChangesAsync();
             return Ok();

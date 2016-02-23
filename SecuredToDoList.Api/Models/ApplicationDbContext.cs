@@ -19,49 +19,49 @@ namespace SecuredToDoList.Api.Models
                     IsDone = false,
                     IsPublic = true,
                     Title = "Public Job 1",
-                    Worker = "account1"
+                    AttendeeEmail = "CuongDuongDuy@sample.com"
                 });
                 context.ToDoItems.Add(new TodoItem
                 {
                     IsDone = false,
                     IsPublic = true,
                     Title = "Public Job 2",
-                    Worker = "account1"
+                    AttendeeEmail = "CuongDuongDuy@sample.com"
                 });
                 context.ToDoItems.Add(new TodoItem
                 {
                     IsDone = false,
                     IsPublic = false,
                     Title = "Private Job 1",
-                    Worker = "account1"
+                    AttendeeEmail = "CuongDuongDuy@sample.com"
                 });
                 context.ToDoItems.Add(new TodoItem
                 {
                     IsDone = false,
                     IsPublic = false,
                     Title = "Private Job 2",
-                    Worker = "account1"
+                    AttendeeEmail = "CuongDuongDuy1@sample.com"
                 });
                 context.ToDoItems.Add(new TodoItem
                 {
                     IsDone = false,
                     IsPublic = true,
                     Title = "Public Job 1",
-                    Worker = "account2"
+                    AttendeeEmail = "CuongDuongDuy1@sample.com"
                 });
                 context.ToDoItems.Add(new TodoItem
                 {
                     IsDone = false,
                     IsPublic = true,
                     Title = "Public Job 2",
-                    Worker = "account2"
+                    AttendeeEmail = "CuongDuongDuy2@sample.com"
                 });
                 context.ToDoItems.Add(new TodoItem
                 {
                     IsDone = false,
                     IsPublic = false,
                     Title = "Private Job 1",
-                    Worker = "account2"
+                    AttendeeEmail = "CuongDuongDuy2@sample.com"
                 });
                 context.SaveChanges();
             }
