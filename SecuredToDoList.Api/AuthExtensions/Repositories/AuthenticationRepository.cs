@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNet.Identity;
@@ -17,24 +18,30 @@ namespace SecuredToDoList.Api.AuthExtensions.Repositories
         private readonly ApplicationUserManager userManager;
         private readonly ApplicationRoleManager roleManager;
         private readonly IAuthenticationManager authenticationManager;
+        private readonly IOwinRequest request;
  
         public AuthenticationRepository(IOwinContext owinContext)
         {
             userManager = owinContext.GetUserManager<ApplicationUserManager>();
             roleManager = owinContext.Get<ApplicationRoleManager>();
             authenticationManager = owinContext.Authentication;
+            request = owinContext.Request;
         }
- 
+
         public async Task<IdentityResult> RegisterUserAsync(UserModel userModel)
         {
             var user = new ApplicationUser
             {
                 UserName = userModel.UserName,
                 DisplayName = userModel.DisplayName,
-                Email =  userModel.Email
+                Email = userModel.Email
             };
-            
+
             var identity = await userManager.CreateAsync(user, userModel.Password);
+            if (!identity.Succeeded)
+            {
+                return identity;
+            }
 
             foreach (var userRole in userModel.UserRoles.Split(','))
             {
@@ -46,11 +53,33 @@ namespace SecuredToDoList.Api.AuthExtensions.Repositories
             }
             return identity;
         }
- 
-        public async Task<IdentityUser> FindUser(string userName, string password)
+
+        public async Task<IdentityUser> FindUserAsync(string userName, string password)
         {
             var user = await userManager.FindAsync(userName, password);
             return user;
+        }
+
+        public async Task<IdentityUser> FindUserAsync(string email)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+            return user;
+        }
+
+        public async Task<string> GetEmailConfirmationCodeAsync(string userId)
+        {
+            var code = await userManager.GenerateEmailConfirmationTokenAsync(userId);
+            return code;
+        }
+
+        public async Task<IdentityResult> ConfirmEmail(string userId, string code)
+        {
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(code))
+            {
+                
+            }
+            var result = await userManager.ConfirmEmailAsync(userId, code);
+            return result;
         }
     }
 }

@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using System;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
+using Microsoft.Owin.Security.DataProtection;
 using SecuredToDoList.Api.AuthExtensions.Models;
 
 namespace SecuredToDoList.Api.AuthExtensions.Managers
@@ -32,6 +34,13 @@ namespace SecuredToDoList.Api.AuthExtensions.Managers
                 RequireLowercase = true,
                 RequireUppercase = true,
             };
+            manager.UserLockoutEnabledByDefault = true;
+            manager.DefaultAccountLockoutTimeSpan = TimeSpan.FromMinutes(2);
+            manager.MaxFailedAccessAttemptsBeforeLockout = 5;
+
+
+            var dataProtectionProvider = new DpapiDataProtectionProvider("Sample");
+            manager.UserTokenProvider = new DataProtectorTokenProvider<ApplicationUser>(dataProtectionProvider.Create("EmailConfirmation"));
             return manager;
         }
     }

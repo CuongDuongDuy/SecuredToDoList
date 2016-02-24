@@ -1,7 +1,9 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Microsoft.AspNet.Identity;
 using SecuredToDoList.Api.AuthExtensions.Models;
 using SecuredToDoList.Api.AuthExtensions.Repositories;
 
@@ -16,9 +18,8 @@ namespace SecuredToDoList.Api.Controllers
         {
             get
             {
-                return authenticationRepository ?? new AuthenticationRepository(Request.GetOwinContext());
+                return authenticationRepository ?? (authenticationRepository =  new AuthenticationRepository(Request.GetOwinContext()));
             }
-            private set { authenticationRepository = value; }
         }
 
         [AllowAnonymous]
@@ -30,36 +31,34 @@ namespace SecuredToDoList.Api.Controllers
             {
                 return BadRequest(ModelState);
             }
- 
-            var result = await AuthenticationRepository.RegisterUserAsync(userModel);
- 
-            var errorResult = GetErrorResult(result);
- 
-            return errorResult ?? Ok();
-        }
- 
-        private IHttpActionResult GetErrorResult(IdentityResult result)
-        {
-            if (result == null)
-            {
-                return InternalServerError();
-            }
+            var identityResult = await AuthenticationRepository.RegisterUserAsync(userModel);
 
-            if (result.Succeeded) return null;
-            if (result.Errors != null)
+            if (identityResult.Succeeded)
             {
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError("", error);
-                }
+                var user = await AuthenticationRepository.FindUserAsync(userModel.Email);
+                var token = await AuthenticationRepository.GetEmailConfirmationCodeAsync(user.Id);
+                var callbackLink = Url.Link("ConfirmEmail", new {userId = user.Id, code = token});
+                return Ok(callbackLink);
             }
- 
-            if (ModelState.IsValid)
-            {
-                return BadRequest();
-            }
- 
-            return BadRequest(ModelState);
+            return BadRequest(identityResult.Errors.Aggregate(string.Empty, (current, error) => current + Environment.NewLine + error));
         }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("ConfirmEmail", Name = "ConfirmEmail")]
+        public async Task<IHttpActionResult> ConfirmEmail(string userId, string code)
+        {
+            if (string.IsNullOrEmpty(userId)|| string.IsNullOrEmpty(code))
+            {
+                return BadRequest("Unvalid parameters");
+            }
+            var identityResult = await AuthenticationRepository.ConfirmEmail(userId, code);
+            if (identityResult.Succeeded)
+            {
+                return Ok();
+            }
+            return BadRequest(identityResult.Errors.Aggregate(string.Empty, (current, error) => current + Environment.NewLine + error));
+        }
+
     }
 }

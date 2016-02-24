@@ -23,7 +23,6 @@ namespace SecuredToDoList.Api.AuthExtensions.Configs
                 AllowInsecureHttp = true,
                 TokenEndpointPath = new PathString("/token"),
                 AccessTokenExpireTimeSpan = TimeSpan.FromDays(1),
-                
                 Provider = new BearerAuthenticationServerProvider()
             };
 
