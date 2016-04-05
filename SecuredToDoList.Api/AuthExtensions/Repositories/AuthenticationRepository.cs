@@ -1,8 +1,6 @@
-﻿using System;
-using System.Net;
-using System.Security.Policy;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Web;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
@@ -80,6 +78,12 @@ namespace SecuredToDoList.Api.AuthExtensions.Repositories
             }
             var result = await userManager.ConfirmEmailAsync(userId, code);
             return result;
+        }
+
+        public async Task<IEnumerable<string>> GetRolesAsync(string userId)
+        {
+            var roles = await userManager.GetRolesAsync(userId);
+            return roles;
         }
     }
 }

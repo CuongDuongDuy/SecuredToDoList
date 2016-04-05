@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
-using SecuredToDoList.Api.Attributes;
+using SecuredToDoList.Api.AuthExtensions.Attributes;
 using SecuredToDoList.Api.Models;
 
 namespace SecuredToDoList.Api.Controllers
@@ -33,7 +33,6 @@ namespace SecuredToDoList.Api.Controllers
 
         [HttpGet]
         [Route("{id:guid}")]
-        [Authorize]
         public async Task<TodoItem> Details(Guid id)
         {
             var userEmail = GetCurrentClaimValue(ClaimTypes.Email);
@@ -42,6 +41,7 @@ namespace SecuredToDoList.Api.Controllers
         }
 
         [HttpPost]
+        [Route("")]
         public async Task<IHttpActionResult> Create(TodoItemEditModel model)
         {
             if (!ModelState.IsValid)
@@ -63,6 +63,7 @@ namespace SecuredToDoList.Api.Controllers
         }
 
         [HttpPut]
+        [Route("")]
         public async Task<IHttpActionResult> Edit(Guid id, TodoItemEditModel model)
         {
             if (!ModelState.IsValid)
@@ -87,7 +88,7 @@ namespace SecuredToDoList.Api.Controllers
 
         [HttpDelete]
         [Route("{id:guid}")]
-        [ClaimAuthorized(RoleNames = "admin")]
+        [ClaimAuthorized(RoleNames = "Admin")]
         public async Task<HttpResponseMessage> Delete(Guid id)
         {
             var todoItem = await db.ToDoItems.SingleOrDefaultAsync(x => x.Id == id);

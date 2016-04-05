@@ -6,6 +6,7 @@ using Owin;
 using SecuredToDoList.Api.AuthExtensions.Managers;
 using SecuredToDoList.Api.AuthExtensions.Models;
 using SecuredToDoList.Api.AuthExtensions.Providers;
+using SecuredToDoList.Api.AuthExtensions.Repositories;
 
 namespace SecuredToDoList.Api.AuthExtensions.Configs
 {

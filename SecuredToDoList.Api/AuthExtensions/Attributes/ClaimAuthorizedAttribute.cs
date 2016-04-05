@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 
-namespace SecuredToDoList.Api.Attributes
+namespace SecuredToDoList.Api.AuthExtensions.Attributes
 {
     public class ClaimAuthorizedAttribute : AuthorizationFilterAttribute
     {
@@ -52,7 +52,7 @@ namespace SecuredToDoList.Api.Attributes
         {
             if (principal == null || principal.Claims == null )
                 return false;
-            var userLogin = principal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Sid);
+            var userLogin = principal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name);
             if (userLogin == null)
             {
                 return false;

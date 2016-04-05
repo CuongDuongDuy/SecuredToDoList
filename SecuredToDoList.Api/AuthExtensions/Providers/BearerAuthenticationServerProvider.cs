@@ -1,5 +1,7 @@
-﻿using System.Security.Claims;
+﻿using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.OAuth;
 using SecuredToDoList.Api.AuthExtensions.Repositories;
 
@@ -26,9 +28,10 @@ namespace SecuredToDoList.Api.AuthExtensions.Providers
             var identity = new ClaimsIdentity(context.Options.AuthenticationType);
             identity.AddClaim(new Claim(ClaimTypes.Name, user.UserName));
             identity.AddClaim(new Claim(ClaimTypes.Email, user.Email));
-            foreach (var role in user.Roles)
+            var userRoles = await authenticationRepository.GetRolesAsync(user.Id);
+            foreach (var role in userRoles)
             {
-                identity.AddClaim(new Claim(ClaimTypes.Role, role.RoleId));
+                identity.AddClaim(new Claim(ClaimTypes.Role, role));
             }
             context.Validated(identity);
         }
